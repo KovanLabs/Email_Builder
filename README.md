@@ -2,6 +2,10 @@
 
 A simple, visual email template builder for creating branded HTML emails for Kovan Labs. No coding experience required!
 
+## 🔗 Live Builder
+
+**👉 [Open Email Builder](https://kovanlabs.github.io/Email_Builder/builder.html)**
+
 ## 🌟 Features
 
 - **Visual Email Builder** - Design beautiful HTML emails with an easy-to-use interface

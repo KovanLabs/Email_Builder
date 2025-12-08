@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kovan Email Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .preview-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #f3f4f6;
+        }
+
+        /* Toggle Switch Styles */
+        .toggle-checkbox:checked {
+            transform: translateX(1rem);
+            border-color: #2563EB;
+        }
+
+        .toggle-checkbox:checked+.toggle-label {
+            background-color: #2563EB;
+        }
+
+        /* Custom Scrollbar for Sidebar */
+        aside::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        aside::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        aside::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        aside::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* Color Button Active State */
+        .color-btn.active {
+            transform: scale(1.1);
+            border-color: #4B5563;
+            /* gray-600 */
+        }
+    </style>
+</head>
+
+<body class="h-screen flex flex-col bg-gray-100 font-sans">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center shadow-sm z-10">
+        <div class="flex items-center gap-3">
+            <h1 class="text-xl font-bold text-gray-800">Kovan Email Builder</h1>
+            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">v2.2</span>
+        </div>
+        <button onclick="exportHtml()"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            Copy HTML
+        </button>
+    </header>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex overflow-hidden">
+
+        <!-- Sidebar Controls -->
+        <aside
+            class="w-1/3 min-w-[400px] max-w-[500px] bg-white border-r border-gray-200 overflow-y-auto p-6 shadow-inner z-0">
+            <div class="space-y-8">
+
+                <!-- Section: General -->
+                <div class="space-y-4">
+                    <button onclick="toggleSection(this)"
+                        class="w-full flex items-center justify-between text-left text-sm uppercase tracking-wider text-gray-500 font-bold border-b pb-2 focus:outline-none">
+                        <span>General Info</span>
+                        <svg class="h-5 w-5 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div class="section-content space-y-4">
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-sm font-medium text-gray-700">Recipient Name</label>
+                                <div
+                                    class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" name="toggle" id="showRecipient" checked
+                                        onchange="updatePreview()"
+                                        class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 ease-in-out left-0 top-0" />
+                                    <label for="showRecipient"
+                                        class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </div>
+                            <div id="recipientInputGroup">
+                                <input type="text" id="recipientName" value="Venkatachalam"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+                                    oninput="updatePreview()">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Theme Color</label>
+                            <div class="flex gap-3">
+                                <button onclick="setThemeColor('#0066A4', this)"
+                                    class="color-btn active w-8 h-8 rounded-full border-2 border-transparent shadow-sm focus:outline-none"
+                                    style="background-color: #0066A4;" title="Blue"></button>
+                                <button onclick="setThemeColor('#F14924', this)"
+                                    class="color-btn w-8 h-8 rounded-full border-2 border-transparent shadow-sm focus:outline-none"
+                                    style="background-color: #F14924;" title="Orange"></button>
+                                <button onclick="setThemeColor('#00A86B', this)"
+                                    class="color-btn w-8 h-8 rounded-full border-2 border-transparent shadow-sm focus:outline-none"
+                                    style="background-color: #00A86B;" title="Teal"></button>
+                                <button onclick="setThemeColor('#FFBE00', this)"
+                                    class="color-btn w-8 h-8 rounded-full border-2 border-transparent shadow-sm focus:outline-none"
+                                    style="background-color: #FFBE00;" title="Yellow"></button>
+                                <input type="hidden" id="themeColor" value="#FFBE00">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Hero -->
+                <div class="space-y-4">
+                    <button onclick="toggleSection(this)"
+                        class="w-full flex items-center justify-between text-left text-sm uppercase tracking-wider text-gray-500 font-bold border-b pb-2 focus:outline-none">
+                        <span>Hero Section</span>
+                        <svg class="h-5 w-5 transform transition-transform duration-200"
+                            style="transform: rotate(-90deg);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div class="section-content space-y-4 hidden">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Header Alignment</label>
+                            <select id="headerAlign" onchange="updatePreview()"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white">
+                                <option value="left_left">Logo Left, Title Left (Standard)</option>
+                                <option value="right_right">Logo Right, Title Right (Standard)</option>
+                                <option value="left_right">Logo Left, Title Right</option>
+                                <option value="right_left">Logo Right, Title Left</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Hero Title</label>
+                            <textarea id="heroTitle" rows="2"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+                                oninput="updatePreview()">Learn, Grow and Thrive Together.</textarea>
+                            <p class="text-xs text-gray-500 mt-1">Use &lt;br&gt; for line breaks.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Hero Image URL</label>
+                            <input type="text" id="heroImage"
+                                value="https://res.cloudinary.com/dxthvm7a5/image/upload/v1764827227/united_ay97kh.png"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+                                oninput="updatePreview()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Top Content -->
+                <div class="space-y-4">
+                    <button onclick="toggleSection(this)"
+                        class="w-full flex items-center justify-between text-left text-sm uppercase tracking-wider text-gray-500 font-bold border-b pb-2 focus:outline-none">
+                        <span>Top Content</span>
+                        <svg class="h-5 w-5 transform transition-transform duration-200"
+                            style="transform: rotate(-90deg);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div class="section-content space-y-4 hidden">
+                        <!-- Welcome Text -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-sm font-medium text-gray-700">Welcome Text</label>
+                                <div
+                                    class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" name="toggle" id="showWelcome" checked
+                                        onchange="updatePreview()"
+                                        class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 ease-in-out left-0 top-0" />
+                                    <label for="showWelcome"
+                                        class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </div>
+                            <div id="welcomeInputGroup">
+                                <textarea id="welcomeText" rows="4"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+                                    oninput="updatePreview()">Welcome to Kovan Labs! We are delighted to have you join our team and look forward to the expertise and perspective you will bring to our work with global clients.</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Culture Text -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-sm font-medium text-gray-700">Culture Text</label>
+                                <div
+                                    class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" name="toggle" id="showCulture" checked
+                                        onchange="updatePreview()"
+                                        class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 ease-in-out left-0 top-0" />
+                                    <label for="showCulture"
+                                        class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </div>
+                            <div id="cultureInputGroup">
+                                <textarea id="cultureText" rows="4"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+                                    oninput="updatePreview()">At Kovan Labs, we foster a culture of collaboration, innovation, and continuous growth. We value each team member’s contributions and are committed to creating an environment where impactful work thrives.</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Checklist (List) -->
+                <div class="space-y-4">
+                    <button onclick="toggleSection(this)"
+                        class="w-full flex items-center justify-between text-left text-sm uppercase tracking-wider text-gray-500 font-bold border-b pb-2 focus:outline-none">
+                        <span>Checklist (List)</span>
+                        <div class="flex items-center gap-2">
+                            <!-- Toggle switch needs to stop propagation if clicked, but let's keep it simple and just put it in the expanded section or next to title?
+                                  Actually, the user wants the "Title" to be a dropdown.
+                                  If I put the toggle in the header, I need to make sure clicking the toggle doesn't collapse the section.
+                                  Let's keep the toggle in the header as requested by the UI shown in original code.
+                             -->
+                            <div onclick="event.stopPropagation()"
+                                class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in mr-2">
+                                <input type="checkbox" name="toggle" id="showListSection" checked
+                                    onchange="updatePreview()"
+                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 ease-in-out left-0 top-0" />
+                                <label for="showListSection"
+                                    class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                            </div>
+                            <svg class="h-5 w-5 transform transition-transform duration-200"
+                                style="transform: rotate(-90deg);" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </button>
+
+                    <div class="section-content space-y-4 hidden" id="listSectionControls">
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Section Title</label>
+                            <input type="text" id="listTitle" value="Your Onboarding Checklist (List)"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+                                oninput="updatePreview()">
+                        </div>
+
+
+
+                        <div id="listItemsContainer" class="space-y-3">
+                            <!-- List items will be injected here -->
+                        </div>
+
+                        <button onclick="addListItem()"
+                            class="mt-3 w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-500 transition-colors font-medium text-sm flex items-center justify-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add List Item
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Section: Checklist (Grid) -->
+                <div class="space-y-4">
+                    <button onclick="toggleSection(this)"
+                        class="w-full flex items-center justify-between text-left text-sm uppercase tracking-wider text-gray-500 font-bold border-b pb-2 focus:outline-none">
+                        <span>Checklist (Grid)</span>
+                        <div class="flex items-center gap-2">
+                            <div onclick="event.stopPropagation()"
+                                class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in mr-2">
+                                <input type="checkbox" name="toggle" id="showGridSection" checked
+                                    onchange="updatePreview()"
+                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 ease-in-out left-0 top-0" />
+                                <label for="showGridSection"
+                                    class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                            </div>
+                            <svg class="h-5 w-5 transform transition-transform duration-200"
+                                style="transform: rotate(-90deg);" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </button>
+
+                    <div class="section-content space-y-4 hidden" id="gridSectionControls">
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Section Title</label>
+                            <input type="text" id="gridTitle" value="Your Onboarding Checklist (Grid)"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+                                oninput="updatePreview()">
+                        </div>
+
+                        <div id="gridItemsContainer" class="space-y-3">
+                            <!-- Grid items will be injected here -->
+                        </div>
+
+                        <button onclick="addGridItem()"
+                            class="mt-3 w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-500 transition-colors font-medium text-sm flex items-center justify-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add Grid Card
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Section: Feature Image -->
+                <div class="space-y-4">
+                    <button onclick="toggleSection(this)"
+                        class="w-full flex items-center justify-between text-left text-sm uppercase tracking-wider text-gray-500 font-bold border-b pb-2 focus:outline-none">
+                        <span>Feature Image</span>
+                        <div class="flex items-center gap-2">
+                            <div onclick="event.stopPropagation()"
+                                class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in mr-2">
+                                <input type="checkbox" name="toggle" id="showFeatureImage" checked
+                                    onchange="updatePreview()"
+                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 ease-in-out left-0 top-0" />
+                                <label for="showFeatureImage"
+                                    class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                            </div>
+                            <svg class="h-5 w-5 transform transition-transform duration-200"
+                                style="transform: rotate(-90deg);" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </button>
+
+                    <div class="section-content space-y-4 hidden" id="featureImageControls">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                        <input type="text" id="featureImage"
+                            value="https://res.cloudinary.com/dxthvm7a5/image/upload/v1764688075/samples/balloons.jpg"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+                            oninput="updatePreview()">
+                    </div>
+                </div>
+
+                <!-- Section: CTA -->
+                <div class="space-y-4">
+                    <button onclick="toggleSection(this)"
+                        class="w-full flex items-center justify-between text-left text-sm uppercase tracking-wider text-gray-500 font-bold border-b pb-2 focus:outline-none">
+                        <span>Call to Action</span>
+                        <div class="flex items-center gap-2">
+                            <div onclick="event.stopPropagation()"
+                                class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in mr-2">
+                                <input type="checkbox" name="toggle" id="showCta" checked onchange="updatePreview()"
+                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 ease-in-out left-0 top-0" />
+                                <label for="showCta"
+                                    class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                            </div>
+                            <svg class="h-5 w-5 transform transition-transform duration-200"
+                                style="transform: rotate(-90deg);" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </button>
+
+                    <div class="section-content space-y-4 hidden" id="ctaControls">
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
+                            <input type="text" id="ctaText" value="Get Started"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+                                oninput="updatePreview()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Button Link</label>
+                            <input type="text" id="ctaLink" value="#"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+                                oninput="updatePreview()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Bottom Content -->
+                <div class="space-y-4">
+                    <button onclick="toggleSection(this)"
+                        class="w-full flex items-center justify-between text-left text-sm uppercase tracking-wider text-gray-500 font-bold border-b pb-2 focus:outline-none">
+                        <span>Bottom Content</span>
+                        <svg class="h-5 w-5 transform transition-transform duration-200"
+                            style="transform: rotate(-90deg);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div class="section-content space-y-4 hidden">
+                        <!-- Closing Text -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-sm font-medium text-gray-700">Closing Text</label>
+                                <div
+                                    class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" name="toggle" id="showClosing" checked
+                                        onchange="updatePreview()"
+                                        class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 ease-in-out left-0 top-0" />
+                                    <label for="showClosing"
+                                        class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </div>
+                            <div id="closingInputGroup">
+                                <textarea id="closingText" rows="3"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+                                    oninput="updatePreview()">Please feel free to reach out with any questions as you transition into your new role. We are excited to have you with us!</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Sign Off -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-sm font-medium text-gray-700">Sign Off</label>
+                                <div
+                                    class="relative inline-block w-10 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" name="toggle" id="showSignOff" checked
+                                        onchange="updatePreview()"
+                                        class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 ease-in-out left-0 top-0" />
+                                    <label for="showSignOff"
+                                        class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </div>
+                            <div id="signOffInputGroup">
+                                <textarea id="signOffText" rows="2"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+                                    oninput="updatePreview()">Best regards,<br>The Kovan Labs Team</textarea>
+                                <p class="text-xs text-gray-500 mt-1">Use &lt;br&gt; for line breaks.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Branding -->
+                <div class="space-y-4">
+                    <button onclick="toggleSection(this)"
+                        class="w-full flex items-center justify-between text-left text-sm uppercase tracking-wider text-gray-500 font-bold border-b pb-2 focus:outline-none">
+                        <span>Branding</span>
+                        <svg class="h-5 w-5 transform transition-transform duration-200"
+                            style="transform: rotate(-90deg);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div class="section-content space-y-4 hidden">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Header/Footer Background
+                                URL</label>
+                            <input type="text" id="bgImage"
+                                value="https://res.cloudinary.com/dxthvm7a5/image/upload/v1764934077/header-bg_uo9aa3.png"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+                                oninput="updatePreview()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Asset Manager -->
+                <div class="space-y-4">
+                    <button onclick="toggleSection(this)"
+                        class="w-full flex items-center justify-between text-left text-sm uppercase tracking-wider text-gray-500 font-bold border-b pb-2 focus:outline-none">
+                        <span>Asset Manager</span>
+                        <svg class="h-5 w-5 transform transition-transform duration-200"
+                            style="transform: rotate(-90deg);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div class="section-content space-y-4 hidden">
+                        <!-- Config -->
+                        <!-- Upload Area -->
+                        <div
+                            class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:bg-gray-50 transition-colors relative mb-2">
+                            <input type="file" id="assetUpload"
+                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                onchange="handleFileUpload(this)" accept="image/*">
+                            <div class="pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400 mx-auto mb-2"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                                <p class="text-sm text-gray-500 font-medium">Click to Upload Image</p>
+                            </div>
+                        </div>
+                        <div id="uploadStatus" class="text-xs text-center hidden mb-4"></div>
+
+                        <!-- Gallery -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-sm font-medium text-gray-700" id="galleryTitle">Assets
+                                    Library</label>
+                                <button onclick="fetchLibraryAssets()"
+                                    class="text-xs text-blue-500 hover:text-blue-700">Refresh</button>
+                            </div>
+                            <div id="assetGallery" class="grid grid-cols-3 gap-2 max-h-60 overflow-y-auto">
+                                <p class="text-xs text-center text-gray-400 col-span-3 py-4">Loading assets...</p>
+                            </div>
+                        </div>
+
+                        <!-- Gallery -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-sm font-medium text-gray-700" id="galleryTitle">Recent
+                                    Uploads</label>
+                                <button onclick="clearAssetHistory()"
+                                    class="text-xs text-red-400 hover:text-red-600">Clear Recent</button>
+                            </div>
+                            <div id="assetGallery" class="grid grid-cols-3 gap-2">
+                                <!-- Assets injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+
+        <!-- Preview Area -->
+        <main
+            class="flex-1 bg-gray-100 flex flex-col items-center justify-center p-8 relative transition-all duration-300">
+            <!-- View Toggles -->
+            <div class="absolute top-4 right-4 flex bg-white rounded-lg shadow p-1 border border-gray-200 z-20">
+                <button onclick="setPreviewMode('desktop')" id="btnDesktop"
+                    class="px-3 py-1 rounded text-sm font-medium bg-blue-100 text-blue-700 transition-colors flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Desktop
+                </button>
+                <button onclick="setPreviewMode('mobile')" id="btnMobile"
+                    class="px-3 py-1 rounded text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Mobile
+                </button>
+                <div class="w-px bg-gray-200 mx-1"></div>
+                <button onclick="toggleDarkMode()" id="btnTheme"
+                    class="px-3 py-1 rounded text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                    Dark
+                </button>
+            </div>
+
+            <iframe id="emailPreview"
+                class="w-full h-full max-w-[800px] bg-white shadow-2xl rounded-lg border border-gray-200 transition-all duration-500 ease-in-out"></iframe>
+        </main>
+    </div>
+
+    <!-- Template Storage (Hidden) -->
+    <script id="emailTemplate" type="text/template">
+        <!DOCTYPE html>
+        <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="x-apple-disable-message-reformatting">
+            <title>Welcome to Kovan Labs</title>
+            <meta name="color-scheme" content="light only">
+            <meta name="supported-color-schemes" content="light only">
+            <style>
+                /* RESET STYLES */
+                body { margin: 0; padding: 0; width: 100% !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #ffffff; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+                img { border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; display: block; max-width: 100%; height: auto; }
+                table { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+                tr { border-collapse: collapse; }
+                td { border-collapse: collapse; mso-line-height-rule: exactly; }
+                .container { width: 100% !important; max-width: 600px !important; min-width: 320px !important; }
+                .hero-title { margin: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 30px; font-weight: 800; color: #1a1a1a; line-height: 1.2; }
+                
+                /* DARK MODE OVERRIDES */
+                :root { color-scheme: light; supported-color-schemes: light; }
+                @media (prefers-color-scheme: dark) {
+                    .force-white { background-color: #ffffff !important; color: #333333 !important; }
+                    .force-white p, .force-white h1, .force-white h2, .force-white h3, .force-white span, .force-white div { color: #333333 !important; }
+                }
+                [data-ogsc] .force-white { background-color: #ffffff !important; color: #333333 !important; }
+                [data-ogsc] .force-white p, [data-ogsc] .force-white h1, [data-ogsc] .force-white h2, [data-ogsc] .force-white h3, [data-ogsc] .force-white span, [data-ogsc] .force-white div { color: #333333 !important; }
+
+                /* MOBILE BREAKPOINT */
+                @media screen and (max-width: 600px) {
+                    .container { width: 100% !important; max-width: 100% !important; }
+                    body { padding: 0 !important; }
+                    table[width="600"] { width: 100% !important; }
+                    .mobile-padding { padding-left: 20px !important; padding-right: 20px !important; }
+                    .stack-column { display: block !important; width: 100% !important; max-width: 100% !important; padding-bottom: 20px !important; padding-left: 0 !important; padding-right: 0 !important; box-sizing: border-box !important; }
+                    .hero-title { font-size: 22px !important; line-height: 1.3 !important; text-align: left !important; }
+                    .mobile-center { text-align: center !important; }
+                    .arrow-align { text-align: right !important; }
+                    img { margin: 0 auto !important; }
+                    .logo-img { width: 120px !important; margin: 0 !important; }
+                    .footer-badge-img { width: 90px !important; margin: 0 0 0 auto !important; }
+                    .mobile-hide { display: none !important; }
+                    .mobile-table-center { float: none !important; margin: 0 auto !important; display: inline-table !important; }
+                }
+            </style>
+        </head>
+        <body style="margin: 0; padding: 0; background-color: {{bgColorBody}};">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation" style="max-width: 600px; min-width: 320px; background-color: {{bgColorBody}}; margin: 0 auto;">
+                <tr>
+                    <td align="center" class="outer-wrapper-padding" style="padding: 40px 10px;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="container" style="background-color: {{bgColorContainer}}; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.08);" role="presentation">
+                            
+                            {{headerBlock}}
+
+                            <!-- MAIN CONTENT -->
+                            <tr>
+                                <td style="padding: 0 40px 30px 40px;" class="mobile-padding">
+                                    {{recipientBlock}}
+                                    {{welcomeBlock}}
+                                    {{cultureBlock}}
+                                </td>
+                            </tr>
+
+                            {{listSectionBlock}}
+
+                            {{gridSectionBlock}}
+
+                            {{featureImageBlock}}
+
+                            {{ctaBlock}}
+
+                            <!-- CLOSING -->
+                            <tr>
+                                <td style="padding: 30px 40px;" class="mobile-padding">
+                                    {{closingTextBlock}}
+                                    {{signOffBlock}}
+                                </td>
+                            </tr>
+
+                            <!-- FOOTER -->
+                            <tr>
+                                <td background="{{bgImage}}" style="background-color: #ffffff; padding: 40px 40px; border-top: 1px solid #f0f0f0; background-image: url('{{bgImage}}'); background-size: cover; background-position: center; background-repeat: no-repeat;" align="center" class="mobile-padding footer-bg">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+                                        <tr>
+                                            <td style="padding-bottom: 25px;">
+                                                <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+                                                    <tr>
+                                                        <td align="left" valign="middle" width="50%" style="padding-bottom: 20px;">
+                                                            <table border="0" cellpadding="0" cellspacing="0" style="float: left;" class="mobile-table-center" role="presentation">
+                                                                <tr>
+                                                                    <td style="padding: 0 15px 0 0;"><a href="https://www.linkedin.com/company/kovan-labs/" style="text-decoration: none; display: inline-block; opacity: 0.7;"><img src="https://res.cloudinary.com/dxthvm7a5/image/upload/v1764850851/linkedin_gte40j.png" alt="LinkedIn" width="24" height="24" style="display: block; border: 0;"></a></td>
+                                                                    <td style="padding: 0 15px 0 0;"><a href="https://www.instagram.com/lifeatkovan/" style="text-decoration: none; display: inline-block; opacity: 0.7;"><img src="https://res.cloudinary.com/dxthvm7a5/image/upload/v1764834940/insta_light_dtlwzb.png" alt="Instagram" width="24" height="24" style="display: block; border: 0;"></a></td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                        <td align="right" valign="middle" width="50%" style="padding-bottom: 20px;">
+                                                            <img src="https://res.cloudinary.com/dxthvm7a5/image/upload/v1764834940/10_light_zkct9q.png" alt="10 Years" width="120" style="display: block; border: 0; margin-bottom: 8px;" class="footer-badge-img">
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="center" style="color: #999999; font-size: 12px; line-height: 1.6; font-family: Arial, sans-serif;" class="footer-text">
+                                                <p style="margin: 0;">&copy; 2025 Kovan Labs. All rights reserved.</p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <div style="height: 40px; font-size: 0; line-height: 0;">&nbsp;</div>
+                    </td>
+                </tr>
+            </table>
+        </body>
+        </html>
+    </script>
+
+    <script>
+        // State for dynamic lists
+        let listItems = [
+            { title: "About Yourself", desc: "Tell us about yourself.", link: "#", showArrow: true },
+            { title: "ID Card", desc: "Register for your access card.", link: "#", showArrow: true }
+        ];
+
+        let gridItems = [
+            { title: "About Yourself", desc: "Tell us about yourself.", link: "#", showArrow: true },
+            { title: "ID Card", desc: "Register for your access card.", link: "#", showArrow: true }
+        ];
+
+        let isDarkMode = false;
+
+        // Initialize Inputs
+        function initInputs() {
+            renderListInputs();
+            renderGridInputs();
+            updatePreview();
+        }
+
+        // --- View Mode Logic ---
+        function setPreviewMode(mode) {
+            const iframe = document.getElementById('emailPreview');
+            const btnDesktop = document.getElementById('btnDesktop');
+            const btnMobile = document.getElementById('btnMobile');
+
+            if (mode === 'mobile') {
+                iframe.style.maxWidth = '375px';
+                iframe.style.height = '700px';
+
+                btnMobile.classList.add('bg-blue-100', 'text-blue-700');
+                btnMobile.classList.remove('text-gray-600', 'hover:bg-gray-100');
+
+                btnDesktop.classList.remove('bg-blue-100', 'text-blue-700');
+                btnDesktop.classList.add('text-gray-600', 'hover:bg-gray-100');
+            } else {
+                iframe.style.maxWidth = '800px';
+                iframe.style.height = '100%';
+
+                btnDesktop.classList.add('bg-blue-100', 'text-blue-700');
+                btnDesktop.classList.remove('text-gray-600', 'hover:bg-gray-100');
+
+                btnMobile.classList.remove('bg-blue-100', 'text-blue-700');
+                btnMobile.classList.add('text-gray-600', 'hover:bg-gray-100');
+            }
+        }
+
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            const btn = document.getElementById('btnTheme');
+
+            if (isDarkMode) {
+                btn.classList.add('bg-gray-800', 'text-white', 'hover:bg-gray-700');
+                btn.classList.remove('text-gray-600', 'hover:bg-gray-100');
+                btn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    Light
+                `;
+            } else {
+                btn.classList.remove('bg-gray-800', 'text-white', 'hover:bg-gray-700');
+                btn.classList.add('text-gray-600', 'hover:bg-gray-100');
+                btn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                    Dark
+                `;
+            }
+            updatePreview();
+        }
+
+        // --- Theme Color Logic ---
+        function setThemeColor(color, btn) {
+            document.getElementById('themeColor').value = color;
+
+            // Update active state of buttons
+            const buttons = document.querySelectorAll('.color-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            updatePreview();
+        }
+
+        // --- List Logic ---
+        function renderListInputs() {
+            const container = document.getElementById('listItemsContainer');
+            container.innerHTML = '';
+            listItems.forEach((item, index) => {
+                container.innerHTML += `
+                    <div class="bg-gray-50 p-3 rounded border border-gray-200 relative group">
+                        <button onclick="removeListItem(${index})" class="absolute top-2 right-2 text-gray-400 hover:text-red-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                        <div class="space-y-2">
+                            <input type="text" placeholder="Title" value="${item.title}" oninput="updateListItem(${index}, 'title', this.value)" class="w-full px-2 py-1 text-sm border rounded">
+                            <input type="text" placeholder="Description" value="${item.desc}" oninput="updateListItem(${index}, 'desc', this.value)" class="w-full px-2 py-1 text-sm border rounded">
+                            <input type="text" placeholder="Link" value="${item.link}" oninput="updateListItem(${index}, 'link', this.value)" class="w-full px-2 py-1 text-sm border rounded">
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-xs text-gray-500">Show Arrow</span>
+                                <div class="relative inline-block w-8 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" ${item.showArrow ? 'checked' : ''} onchange="toggleItemArrow('list', ${index}, this.checked)"
+                                        class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 ease-in-out left-0 top-0" style="width: 1rem; height: 1rem; border-width: 2px;" />
+                                    <label class="toggle-label block overflow-hidden h-4 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function addListItem() {
+            listItems.push({ title: "New Item", desc: "Description here", link: "#", showArrow: true });
+            renderListInputs();
+            updatePreview();
+        }
+
+        function removeListItem(index) {
+            listItems.splice(index, 1);
+            renderListInputs();
+            updatePreview();
+        }
+
+        function updateListItem(index, field, value) {
+            listItems[index][field] = value;
+            updatePreview();
+        }
+
+        // --- Grid Logic ---
+        function renderGridInputs() {
+            const container = document.getElementById('gridItemsContainer');
+            container.innerHTML = '';
+            gridItems.forEach((item, index) => {
+                container.innerHTML += `
+                    <div class="bg-gray-50 p-3 rounded border border-gray-200 relative group">
+                        <button onclick="removeGridItem(${index})" class="absolute top-2 right-2 text-gray-400 hover:text-red-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                        <div class="space-y-2">
+                            <input type="text" placeholder="Title" value="${item.title}" oninput="updateGridItem(${index}, 'title', this.value)" class="w-full px-2 py-1 text-sm border rounded">
+                            <input type="text" placeholder="Description" value="${item.desc}" oninput="updateGridItem(${index}, 'desc', this.value)" class="w-full px-2 py-1 text-sm border rounded">
+                            <input type="text" placeholder="Link" value="${item.link}" oninput="updateGridItem(${index}, 'link', this.value)" class="w-full px-2 py-1 text-sm border rounded">
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-xs text-gray-500">Show Arrow</span>
+                                <div class="relative inline-block w-8 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" ${item.showArrow ? 'checked' : ''} onchange="toggleItemArrow('grid', ${index}, this.checked)"
+                                        class="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300 ease-in-out left-0 top-0" style="width: 1rem; height: 1rem; border-width: 2px;" />
+                                    <label class="toggle-label block overflow-hidden h-4 rounded-full bg-gray-300 cursor-pointer"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function addGridItem() {
+            gridItems.push({ title: "New Card", desc: "Description here", link: "#", showArrow: true });
+            renderGridInputs();
+            updatePreview();
+        }
+
+        function removeGridItem(index) {
+            gridItems.splice(index, 1);
+            renderGridInputs();
+            updatePreview();
+        }
+
+        function updateGridItem(index, field, value) {
+            gridItems[index][field] = value;
+            updatePreview();
+        }
+
+        function toggleItemArrow(type, index, value) {
+            if (type === 'list') {
+                listItems[index].showArrow = value;
+            } else {
+                gridItems[index].showArrow = value;
+            }
+            updatePreview();
+        }
+
+
+        function toggleSection(btn) {
+            const content = btn.nextElementSibling;
+            const icon = btn.querySelector('svg');
+
+            if (content.classList.contains('hidden')) {
+                // Expand
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                // Collapse
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(-90deg)';
+            }
+        }
+
+        function updatePreview() {
+            const template = document.getElementById('emailTemplate').innerHTML;
+
+            // Get values
+            const showRecipient = document.getElementById('showRecipient').checked;
+            const recipientName = document.getElementById('recipientName').value;
+            const themeColor = document.getElementById('themeColor').value; // Get selected color
+            const headerAlign = document.getElementById('headerAlign').value;
+            const heroTitle = document.getElementById('heroTitle').value;
+            const heroImage = document.getElementById('heroImage').value;
+
+            // Top Content
+            const showWelcome = document.getElementById('showWelcome').checked;
+            const welcomeText = document.getElementById('welcomeText').value;
+            const showCulture = document.getElementById('showCulture').checked;
+            const cultureText = document.getElementById('cultureText').value;
+
+            // List/Grid/Img/CTA Toggles
+            const showListSection = document.getElementById('showListSection').checked;
+            const listTitle = document.getElementById('listTitle').value;
+            const showGridSection = document.getElementById('showGridSection').checked;
+            const gridTitle = document.getElementById('gridTitle').value;
+            const showFeatureImage = document.getElementById('showFeatureImage').checked;
+            const featureImage = document.getElementById('featureImage').value;
+            const showCta = document.getElementById('showCta').checked;
+            const ctaText = document.getElementById('ctaText').value;
+            const ctaLink = document.getElementById('ctaLink').value;
+
+            // Bottom Content
+            const showClosing = document.getElementById('showClosing').checked;
+            const closingText = document.getElementById('closingText').value;
+            const showSignOff = document.getElementById('showSignOff').checked;
+            const signOffText = document.getElementById('signOffText').value;
+
+            const bgImage = document.getElementById('bgImage').value;
+
+            // Toggle Visibility in Sidebar
+            toggleVisibility('recipientInputGroup', showRecipient);
+            toggleVisibility('welcomeInputGroup', showWelcome);
+            toggleVisibility('cultureInputGroup', showCulture);
+            toggleVisibility('listSectionControls', showListSection);
+            toggleVisibility('gridSectionControls', showGridSection);
+            toggleVisibility('featureImageControls', showFeatureImage);
+            toggleVisibility('ctaControls', showCta);
+            toggleVisibility('closingInputGroup', showClosing);
+            toggleVisibility('signOffInputGroup', showSignOff);
+
+            toggleVisibility('signOffInputGroup', showSignOff);
+
+            // --- Define Colors based on Mode ---
+            // Outer background (page)
+            const colorBgOuter = isDarkMode ? '#111827' : '#f3f4f6';
+            // Main container background (paper)
+            const colorBgMain = isDarkMode ? '#1f2937' : '#ffffff';
+
+            const colorBgBody = colorBgMain; // Alias for existing code usage if any
+            const colorBgCard = isDarkMode ? '#374151' : '#ffffff';
+            const colorBgInner = isDarkMode ? '#111827' : '#fafafa';
+            const colorTextTitle = isDarkMode ? '#f9fafb' : '#333333';
+            const colorTextBase = isDarkMode ? '#d1d5db' : '#555555';
+            const colorTextMuted = isDarkMode ? '#9ca3af' : '#666666';
+            const colorBorder = isDarkMode ? '#4b5563' : '#e0e0e0';
+
+            // --- Construct Blocks ---
+
+            // Recipient
+            let recipientBlock = showRecipient ? `<p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: ${isDarkMode ? '#000000' : '#000000'};"><strong>Hi ${recipientName},</strong></p>` : '';
+            // Note: Recipient usually black/dark, maybe keep it dark or adjust? Let's assume recipient name is always dark on white bg, but in dark mode?
+            // Wait, standard dark mode layout usually has dark background.
+            // Let's adjust the hardcoded blacks.
+            recipientBlock = showRecipient ? `<p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: ${colorTextTitle};"><strong>Hi ${recipientName},</strong></p>` : '';
+
+            let welcomeBlock = showWelcome ? `<p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: ${colorTextBase};">${welcomeText}</p>` : '';
+            let cultureBlock = showCulture ? `<p style="margin: 0 0 10px 0; font-size: 16px; line-height: 1.6; color: ${colorTextBase};">${cultureText}</p>` : '';
+            let closingTextBlock = showClosing ? `<p style="margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: ${colorTextBase};">${closingText}</p>` : '';
+            let signOffBlock = showSignOff ? `<p style="margin: 0; font-size: 16px; line-height: 1.6; color: ${colorTextTitle}; font-weight: bold;">${signOffText}</p>` : '';
+
+            // Feature Image
+            let featureImageBlock = '';
+            if (showFeatureImage) {
+                featureImageBlock = `
+                <!-- IMAGE SECTION -->
+                <tr>
+                    <td style="padding: 0 40px 0px 40px;" class="mobile-padding">
+                        <img src="${featureImage}" alt="Zoom" width="100%" style="display: block; border: 0; border-radius: 12px;">
+                    </td>
+                </tr>
+                <tr><td height="30" style="font-size: 0; line-height: 0;">&nbsp;</td></tr>`;
+            }
+
+            // CTA
+            let ctaBlock = '';
+            if (showCta) {
+                ctaBlock = `
+                <!-- CTA SECTION -->
+                <tr>
+                    <td align="center" style="padding: 0 40px 0 40px;" class="mobile-padding">
+                        <table border="0" cellpadding="0" cellspacing="0" role="presentation">
+                            <tr>
+                                <td align="center" style="border-radius: 4px;" bgcolor="${themeColor}">
+                                    <a href="${ctaLink}" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 4px; border: 1px solid ${themeColor}; display: inline-block; font-weight: bold;">${ctaText}</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>`;
+            }
+
+            // List Section
+            let listSectionBlock = '';
+            if (showListSection) {
+                let listItemsHtml = '';
+                listItems.forEach(item => {
+                    listItemsHtml += `
+                    <tr>
+                        <td width="100%" valign="top" class="stack-column" style="padding-bottom: 20px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" class="card-box" style="background-color: ${colorBgCard}; border: 1px solid ${colorBorder}; border-radius: 8px; height: 100%;" role="presentation">
+                                <tr>
+                                    <td style="padding: 20px;">
+                                        <a href="${item.link}" style="text-decoration: none; display: block; color: inherit;">
+                                            <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+                                                <tr>
+                                                    <td valign="middle" width="80%">
+                                                        <div style="font-size: 15px; color: ${colorTextTitle}; font-weight: bold; margin-bottom: 4px;">${item.title}</div>
+                                                        <div style="font-size: 13px; color: ${colorTextMuted}; line-height: 1.4;">${item.desc}</div>
+                                                    </td>
+                                                    <td valign="middle" width="20%" align="right">
+                                                        ${item.showArrow ? `<span style="color: ${themeColor}; font-size: 24px;">&#8594;</span>` : ''}
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>`;
+                });
+
+                listSectionBlock = `
+                <!-- CHECKLIST SECTION (LIST) -->
+                <tr>
+                    <td style="padding: 0 40px 0px 40px;" class="mobile-padding">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="inner-box" style="background-color: ${colorBgInner}; border-radius: 12px; overflow: hidden;" role="presentation">
+                            <tr>
+                                <td style="padding: 30px;">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+                                        <tr>
+                                            <td style="padding-bottom: 30px;">
+                                                <h3 style="margin: 0; color: ${colorTextTitle}; font-size: 18px; border-bottom: 3px solid ${themeColor}; display: inline-block; padding-bottom: 5px; font-weight: 700;">${listTitle}</h3>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+                                                    ${listItemsHtml}
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr><td height="30" style="font-size: 0; line-height: 0;">&nbsp;</td></tr>`;
+            }
+
+            // Grid Section
+            let gridSectionBlock = '';
+            if (showGridSection) {
+                let gridItemsHtml = '';
+                for (let i = 0; i < gridItems.length; i += 2) {
+                    const item1 = gridItems[i];
+                    const item2 = gridItems[i + 1]; // Might be undefined
+
+                    gridItemsHtml += `<tr>`;
+
+                    // Card 1
+                    gridItemsHtml += `
+                    <td width="50%" valign="top" class="stack-column" style="padding-bottom: 20px; padding-right: 10px;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="card-box" style="background-color: ${colorBgCard}; border: 1px solid ${colorBorder}; border-radius: 8px; height: 100%; min-height: 120px;" role="presentation">
+                            <tr>
+                                <td style="padding: 20px;" valign="top">
+                                    <a href="${item1.link}" style="text-decoration: none; display: block; color: inherit; height: 100%;">
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" role="presentation">
+                                            <tr>
+                                                <td valign="top" width="70%">
+                                                    <div style="font-size: 15px; color: ${colorTextTitle}; font-weight: bold; margin-bottom: 4px;">${item1.title}</div>
+                                                    <div style="font-size: 13px; color: ${colorTextMuted}; line-height: 1.4;">${item1.desc}</div>
+                                                </td>
+                                                <td valign="middle" width="30%" align="right">
+                                                    ${item1.showArrow ? `<span style="color: ${themeColor}; font-size: 24px;">&#8594;</span>` : ''}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>`;
+
+                    // Card 2 (if exists)
+                    if (item2) {
+                        gridItemsHtml += `
+                        <td width="50%" valign="top" class="stack-column" style="padding-bottom: 20px; padding-left: 10px;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" class="card-box" style="background-color: ${colorBgCard}; border: 1px solid ${colorBorder}; border-radius: 8px; height: 100%; min-height: 120px;" role="presentation">
+                                <tr>
+                                    <td style="padding: 20px;" valign="top">
+                                        <a href="${item2.link}" style="text-decoration: none; display: block; color: inherit; height: 100%;">
+                                            <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" role="presentation">
+                                                <tr>
+                                                    <td valign="top" width="80%">
+                                                        <div style="font-size: 15px; color: ${colorTextTitle}; font-weight: bold; margin-bottom: 4px;">${item2.title}</div>
+                                                        <div style="font-size: 13px; color: ${colorTextMuted}; line-height: 1.4;">${item2.desc}</div>
+                                                    </td>
+                                                    <td valign="middle" width="20%" align="right">
+                                                        ${item2.showArrow ? `<span style="color: ${themeColor}; font-size: 24px;">&#8594;</span>` : ''}
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>`;
+                    } else {
+                        // Empty cell to maintain structure
+                        gridItemsHtml += `<td width="50%" class="stack-column"></td>`;
+                    }
+
+                    gridItemsHtml += `</tr>`;
+                }
+
+                gridSectionBlock = `
+                <!-- CHECKLIST SECTION (GRID) -->
+                <tr>
+                    <td style="padding: 0 40px 0px 40px;" class="mobile-padding">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="inner-box" style="background-color: ${colorBgInner}; border-radius: 12px; overflow: hidden;" role="presentation">
+                            <tr>
+                                <td style="padding: 30px;">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+                                        <tr>
+                                            <td style="padding-bottom: 30px;">
+                                                <h3 style="margin: 0; color: ${colorTextTitle}; font-size: 18px; border-bottom: 3px solid ${themeColor}; display: inline-block; padding-bottom: 5px; font-weight: 700;">${gridTitle}</h3>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+                                                    ${gridItemsHtml}
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr><td height="30" style="font-size: 0; line-height: 0;">&nbsp;</td></tr>`;
+            }
+
+            // Header Construction
+            let headerHtml = '';
+            let heroHtml = '';
+
+            // Define parts
+            const logoPart = `
+                <td align="${headerAlign.startsWith('left') ? 'left' : 'right'}" valign="middle">
+                    <img src="https://res.cloudinary.com/dxthvm7a5/image/upload/v1764834941/logo_light_dsufbe.png" alt="Kovan Labs" width="160" style="display: block; border: 0;" class="logo-img">
+                </td>`;
+
+            const emptyPart = `<td align="center" valign="middle" width="50%" class="stack-column mobile-center" style="padding-bottom: 20px;"></td>`;
+
+            // Header Row Logic
+            if (headerAlign.startsWith('left')) {
+                headerHtml = `
+                <tr>
+                    <td background="${bgImage}" style="padding: 40px 40px 20px 40px; background-color: ${colorBgBody}; background-image: url('${bgImage}'); background-size: cover; background-position: center; background-repeat: no-repeat;" class="mobile-padding">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+                            <tr>
+                                ${logoPart}
+                                ${emptyPart}
+                            </tr>
+                        </table>
+                    </td>
+                </tr>`;
+            } else {
+                headerHtml = `
+                <tr>
+                    <td background="${bgImage}" style="padding: 40px 40px 20px 40px; background-color: ${colorBgBody}; background-image: url('${bgImage}'); background-size: cover; background-position: center; background-repeat: no-repeat;" class="mobile-padding">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+                            <tr>
+                                ${emptyPart}
+                                ${logoPart}
+                            </tr>
+                        </table>
+                    </td>
+                </tr>`;
+            }
+
+            // Hero Row Logic
+            const titlePart = `
+                <td align="${headerAlign.endsWith('left') ? 'left' : 'right'}" valign="middle" width="60%">
+                    <h1 class="hero-title" style="color: ${colorTextTitle};">${heroTitle}</h1>
+                </td>`;
+
+            const imagePart = `
+                <td align="${headerAlign.endsWith('left') ? 'right' : 'left'}" valign="middle" width="40%" style="padding-top: 10px;">
+                    <img src="${heroImage}" alt="United Team" width="150" style="display: block; border: 0;" class="img-fluid">
+                </td>`;
+
+            if (headerAlign.endsWith('left')) {
+                // Title Left, Image Right
+                heroHtml = `
+                <tr>
+                    <td style="padding: 0 40px 30px 40px;" class="mobile-padding">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+                            <tr>
+                                ${titlePart}
+                                ${imagePart}
+                            </tr>
+                        </table>
+                    </td>
+                </tr>`;
+            } else {
+                // Image Left, Title Right
+                heroHtml = `
+                <tr>
+                    <td style="padding: 0 40px 30px 40px;" class="mobile-padding">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
+                            <tr>
+                                ${imagePart}
+                                ${titlePart}
+                            </tr>
+                        </table>
+                    </td>
+                </tr>`;
+            }
+
+            let headerBlock = headerHtml + heroHtml;
+
+            // Replace placeholders
+            let html = template
+                .replace(/{{bgColorBody}}/g, colorBgOuter)
+                .replace(/{{bgColorContainer}}/g, colorBgMain)
+                .replace(/{{headerBlock}}/g, headerBlock)
+                .replace(/{{recipientBlock}}/g, recipientBlock)
+                .replace(/{{welcomeBlock}}/g, welcomeBlock)
+                .replace(/{{cultureBlock}}/g, cultureBlock)
+                .replace(/{{listSectionBlock}}/g, listSectionBlock)
+                .replace(/{{gridSectionBlock}}/g, gridSectionBlock)
+                .replace(/{{featureImageBlock}}/g, featureImageBlock)
+                .replace(/{{ctaBlock}}/g, ctaBlock)
+                .replace(/{{closingTextBlock}}/g, closingTextBlock)
+                .replace(/{{signOffBlock}}/g, signOffBlock)
+                .replace(/{{bgImage}}/g, bgImage);
+
+            // Update iframe
+            const iframe = document.getElementById('emailPreview');
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            doc.open();
+            doc.write(html);
+            doc.close();
+        }
+
+        function toggleVisibility(id, show) {
+            const el = document.getElementById(id);
+            if (show) {
+                el.classList.remove('opacity-50', 'pointer-events-none');
+            } else {
+                el.classList.add('opacity-50', 'pointer-events-none');
+            }
+        }
+
+        function exportHtml() {
+            const iframe = document.getElementById('emailPreview');
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            const html = doc.documentElement.outerHTML;
+
+            navigator.clipboard.writeText("<!DOCTYPE html>\n" + html).then(() => {
+                alert('HTML copied to clipboard!');
+            });
+        }
+
+        // Initialize
+        window.onload = function () {
+            initInputs();
+            fetchLibraryAssets();
+        };
+
+        // --- Asset Manager Logic ---
+        // Hardcoded Configuration
+        const CLOUD_NAME = 'dxthvm7a5';
+        const UPLOAD_PRESET = 'email_asset';
+        const API_KEY = '123456789';
+        const API_SECRET = '4Mm4OFNq5mZufr2G0cphUESn4-M';
+
+        let libraryAssets = [];
+
+        function handleFileUpload(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const statusDiv = document.getElementById('uploadStatus');
+
+            statusDiv.textContent = 'Uploading...';
+            statusDiv.classList.remove('hidden', 'text-green-600', 'text-red-600');
+            statusDiv.classList.add('text-blue-600');
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', UPLOAD_PRESET);
+            formData.append('tags', 'email-assets'); // Auto-tag for library visibility
+
+            fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error.message);
+                    }
+
+                    // Success
+                    statusDiv.textContent = 'Upload Successful!';
+                    statusDiv.classList.remove('text-blue-600');
+                    statusDiv.classList.add('text-green-600');
+
+                    // Refresh Library
+                    fetchLibraryAssets();
+
+                    input.value = '';
+                })
+                .catch(error => {
+                    console.error('Upload Error:', error);
+                    let msg = error.message;
+                    if (msg.includes('Failed to fetch')) {
+                        msg = "Network Error: Browser blocked upload. Disable AdBlock or check Internet.";
+                    } else if (msg.includes('unsigned')) {
+                        msg = `Configuration Error: Preset '${UPLOAD_PRESET}' is 'Signed'. Change it to 'Unsigned' in Cloudinary Settings.`;
+                    } else if (msg.includes('Invalid upload_preset')) {
+                        msg = `Missing Preset: Preset '${UPLOAD_PRESET}' not found. Create it in Settings > Upload.`;
+                    }
+                    statusDiv.innerHTML = `<span class="text-red-600 font-bold text-xs">${msg}</span>`;
+                });
+        }
+
+        function fetchLibraryAssets() {
+            const gallery = document.getElementById('assetGallery');
+            gallery.innerHTML = '<p class="text-xs text-center text-gray-400 col-span-3 py-4">Loading library...</p>';
+
+            // CLIENT-SIDE WORKAROUND:
+            // Direct Admin API calls are blocked by CORS in browsers.
+            // We will use the "Client-Side Resource List" method (JSON list) which works if "Resource list" is enabled in Cloudinary Security settings.
+            // We default to listing assets tagged with "email-assets" to simulate a folder/library.
+
+            const tag = 'email-assets'; // Default "Library" tag
+            const url = `https://res.cloudinary.com/${CLOUD_NAME}/image/list/${tag}.json`;
+
+            fetch(url)
+                .then(res => {
+                    if (!res.ok) {
+                        // 404 = Tag empty OR Restricted
+                        if (res.status === 404) throw new Error("No assets found. To see existing images, add tag 'email-assets' to them in Cloudinary.");
+                        if (res.status === 403) throw new Error('Restricted: Uncheck "Resource list".');
+                        throw new Error(`Load Failed (${res.status})`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (!data.resources || data.resources.length === 0) {
+                        gallery.innerHTML = '<p class="text-xs text-gray-500 col-span-3 text-center py-4">No assets found (Tag: email-assets).</p>';
+                        return;
+                    }
+
+                    libraryAssets = data.resources.map(res => ({
+                        // Construct URL manually as list API returns minimal data
+                        url: `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/v${res.version}/${res.public_id}.${res.format}`,
+                        thumb: `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_thumb,w_200,g_face/v${res.version}/${res.public_id}.${res.format}`,
+                        id: res.public_id
+                    }));
+
+                    renderLibrary();
+                })
+                .catch(err => {
+                    console.error(err);
+                    let msg = err.message;
+                    if (msg === 'Failed to fetch') msg = 'Network blocked request (AdBlock?)';
+
+                    let hint = '';
+                    if (msg.includes('No assets') || msg.includes('Restricted')) {
+                        hint = 'Note: If "Resource list" is already unchecked, upload an image first.';
+                    }
+
+                    gallery.innerHTML = `<div class="col-span-3 text-center py-4">
+                    <p class="text-xs text-red-500 font-bold mb-1">${msg}</p>
+                    <p class="text-[10px] text-gray-400">${hint}</p>
+                </div>`;
+                });
+        }
+
+        function renderLibrary() {
+            const gallery = document.getElementById('assetGallery');
+            if (libraryAssets.length === 0) {
+                gallery.innerHTML = '<p class="text-xs text-gray-400 col-span-3 text-center py-4">No assets</p>';
+                return;
+            }
+
+            gallery.innerHTML = libraryAssets.map((asset) => `
+                <div class="relative group aspect-square bg-gray-100 rounded overflow-hidden border border-gray-200 cursor-pointer" onclick="copyAssetUrl('${asset.url}')" title="Click to Copy URL">
+                    <img src="${asset.thumb || asset.url}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all flex items-center justify-center">
+                        <span class="text-white text-xs font-bold opacity-0 group-hover:opacity-100">COPY</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function copyAssetUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                const statusDiv = document.getElementById('uploadStatus');
+                statusDiv.textContent = 'URL Copied!';
+                statusDiv.classList.remove('hidden', 'text-red-600', 'text-blue-600');
+                statusDiv.classList.add('text-green-600');
+                setTimeout(() => {
+                    statusDiv.textContent = '';
+                }, 2000);
+            });
+        }
+
+        function clearAssetHistory() {
+            if (confirm('Clear history?')) {
+                recentAssets = [];
+                localStorage.removeItem('kovan_assets');
+                renderAssetGallery();
+            }
+        }
+    </script>
+</body>
+
+</html>

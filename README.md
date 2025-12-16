@@ -16,7 +16,7 @@ A simple, visual email template builder for creating branded HTML emails for Kov
 
 ### Step 1: Generate Your Email HTML
 
-1. Open `builder.html` in your web browser ( <a href="builder.html"> Builder link</a> )
+1. Open `builder.html` in your web browser ( <a href="builder.html"> Builder link</a> ) (<a href="https://kovanlabs.github.io/Email_Builder/">Pages link</a>)
 2. Use the sidebar controls to customize your email:
    - Add your content (headings, paragraphs, etc.)
    - Choose your theme colors
